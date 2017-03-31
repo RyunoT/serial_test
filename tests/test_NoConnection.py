@@ -1,5 +1,6 @@
 import unittest
 
+
 class CDP_config:
     config = {
         # item: [begin, end, float_change]

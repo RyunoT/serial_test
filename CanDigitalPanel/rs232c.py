@@ -1,6 +1,7 @@
 import serial
 import math
 
+
 class CDP_config:
     config = {
         # item: [begin, end, float_change]
@@ -30,13 +31,14 @@ class CDP_config:
 class rs232c:
     def __init__(self, port_num):
         self.ser = serial.Serial(port=port_num - 1,
-                                 baudrate=2400,
+                                 baudrate=38400,
                                  bytesize=8,
-                                 parity='N',
+                                 parity="N",
                                  stopbits=1,
                                  timeout=1)
         self.read_buff = None
         self.write_buff = None
+        self._rs232c_write("S")
 
     def rs232c_close(self):
         self.ser.close()
@@ -44,11 +46,11 @@ class rs232c:
 
     def _rs232c_readline(self):
         self.read_buff = self.ser.readline()
-        return
+        return self.read_buff
 
     def _rs232c_write(self, write_line):
-        self.write_buff = write_line
-        self.ser.write(self.write_buff.encode("utf-8"))
+        self.write_buff = write_line.encode("utf-8")
+        self.ser.write(self.write_buff)
         return self._rs232c_readline()
 
     def into_program_mode(self):
@@ -65,21 +67,20 @@ class rs232c:
         return self.read_buff
 
     def CDP_setting_write(self, item, value):
-        line = "WP" + str(item).zfill(2) + ", " + str(value) + "\r"
+        line = "WP" + str(item).zfill(2) + "," + str(value) + "\r"
         self._rs232c_write(line)
         return self.read_buff
 
-    def CDP_setting_test(self, item, value_range):
-        for i in range(value_range):
-            """writing test"""
-            ret_w = self.CDP_setting_write(item, i)
-            if not ret_w == "O\r\n":
-                print("test failed {0}".format(self.write_buff))
+    def CDP_setting_test(self, item, value):
+        """writing test"""
+        ret_w = self.CDP_setting_write(item, value)
+        if not ret_w == b"O\r\n":
+            print("test failed {0}".format(self.write_buff))
 
-            """reading test"""
-            ret_r = self.CDP_setting_read(item)
-            if not ret_r == str(i) + "\r\n":
-                print("test failed {0}".format(self.write_buff))
+        """reading test"""
+        ret_r = self.CDP_setting_read(item)
+        if not ret_r == (str(value) + "\r\n").encode("utf-8"):
+            print("test failed {0}".format(self.write_buff))
 
     def all_CDP_setting_test(self):
         keys = CDP_config.config.keys()
