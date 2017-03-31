@@ -52,8 +52,6 @@ class Test_NoConnection(unittest.TestCase):
         print(i)
 
 
-
-
 if __name__ == "__main__":
     unittest.main()
 
