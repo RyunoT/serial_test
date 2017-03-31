@@ -3,8 +3,19 @@ from CanDigitalPanel import rs232c
 
 
 class Test_CanDigitalPanel(unittest.TestCase):
-    CDP = rs232c.rs232c(5)
+#    CDP = rs232c.rs232c(4, 115200)  # CDP
+    CDP = rs232c.rs232c(4, 38400)   # TDP39X
     dic = rs232c.CDP_config
+
+    @classmethod
+    def setUpClass(cls):
+        cls.CDP.initial_setting()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.CDP.initial_setting()
+        cls.CDP.outof_program_mode()
+        cls.CDP.rs232c_close()
 
     def setUp(self):
         self.CDP.into_program_mode()
@@ -25,7 +36,7 @@ class Test_CanDigitalPanel(unittest.TestCase):
         self._test_setting_WriteRead(30, 0)
         self._test_setting_WriteRead(30, 2)
 
-    def test_all_setting(self):
+    def _test_all_setting(self):
         keys = self.dic.config.keys()
         for i in keys:
             with self.subTest(i=i):
@@ -36,6 +47,55 @@ class Test_CanDigitalPanel(unittest.TestCase):
                         deci = round(j * float_change, 6)
                         self._test_setting_WriteRead(i, j)
 
+    def _test_setting_x(self, item):
+        begin, end, float_change = self.dic.config[item]
+        for i in range(begin, end + 1):
+            with self.subTest(i=i):
+                # 小数変換
+                deci = round(i * float_change, 6)
+                self._test_setting_WriteRead(item, i)
+
+    def test_setting_1_2_4_7_13_14_15_16_17_30(self):
+        """range(0, 10)"""
+        one_digit = [1,
+                     2,
+                     4,
+                     7,
+                     13,
+                     14,
+                     15,
+                     16,
+                     17,
+                     30,
+                     ]
+        for j in one_digit:
+            with self.subTest(j=j):
+                self._test_setting_x(j)
+
+    def test_setting_3(self):
+        """range is float"""
+        self._test_setting_x(3)
+
+    def test_setting_12(self):
+        """bug!!!!!"""
+        self._test_setting_x(12)
+
+    def test_setting_6(self):
+        """range(0, 100)"""
+        self._test_setting_x(6)
+
+    def _test_setting_5_10_11(self):
+        """range(0, 10000)"""
+        self._test_setting_x(5)
+        self._test_setting_x(10)
+        self._test_setting_x(11)
+
+    def _test_setting_20_21_22_23(self):
+        """range(0, 1000000)"""
+        self._test_setting_x(20)
+        self._test_setting_x(21)
+        self._test_setting_x(22)
+        self._test_setting_x(23)
 
 
 if __name__ == "__main__":
