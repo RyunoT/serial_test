@@ -14,6 +14,7 @@ class Test_CanDigitalPanel(unittest.TestCase):
         pass
 
     def test_CDP_setting_read(self):
+        pass
 
 
 
