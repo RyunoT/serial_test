@@ -9,6 +9,7 @@ class Test_CanDigitalPanel(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.CDP.is_opened()
         cls.CDP.into_program_mode()
         cls.CDP.initial_setting()
 
@@ -16,7 +17,7 @@ class Test_CanDigitalPanel(unittest.TestCase):
     def tearDownClass(cls):
         cls.CDP.initial_setting()
         cls.CDP.outof_program_mode()
-        cls.CDP.rs232c_close()
+        cls.CDP.is_closed()
 
     def setUp(self):
         pass
@@ -46,7 +47,7 @@ class Test_CanDigitalPanel(unittest.TestCase):
                     with self.subTest(j=j):
                         # 小数変換
                         deci = round(j * float_change, 6)
-                        self._test_setting_WriteRead(i, j)
+                        self._test_setting_WriteRead(i, deci)
 
     def _test_setting_x(self, item):
         begin, end, float_change = self.dic.config[item]
@@ -54,7 +55,7 @@ class Test_CanDigitalPanel(unittest.TestCase):
             with self.subTest(i=i):
                 # 小数変換
                 deci = round(i * float_change, 6)
-                self._test_setting_WriteRead(item, i)
+                self._test_setting_WriteRead(item, deci)
 
     def test_setting_1_2_4_7_13_14_15_16_17_30(self):
         """range(0, 10)"""
