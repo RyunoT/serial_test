@@ -9,6 +9,7 @@ class Test_CanDigitalPanel(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.CDP.into_program_mode()
         cls.CDP.initial_setting()
 
     @classmethod
@@ -18,10 +19,10 @@ class Test_CanDigitalPanel(unittest.TestCase):
         cls.CDP.rs232c_close()
 
     def setUp(self):
-        self.CDP.into_program_mode()
+        pass
 
     def tearDown(self):
-        self.CDP.outof_program_mode()
+        pass
 
     def _test_setting_WriteRead(self, item, value):
         ret_w = self.CDP.setting_write(item, value)
