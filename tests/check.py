@@ -25,7 +25,7 @@ def main_check():
     ret = cdp.outof_program_mode()
     print(ret)
 
-    cdp.rs232c_close()
+    cdp.is_closed()
     return
 
 
